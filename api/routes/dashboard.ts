@@ -5,73 +5,69 @@ import type { OrgStatus, Plan } from "../queries/orgs";
 
 export const dashboardRouter = Router();
 
-type OrgSummary = {
+type OrgRow = {
   id: number;
   name: string;
   slug: string;
   plan: Plan;
   status: OrgStatus;
+  activeMembers: number;
+  events30d: number;
+  lastEventAt: Date | null;
 };
 
 /** Fleet overview: every tenant, with headline numbers for each. */
 dashboardRouter.get("/", async (_req, res) => {
-  const organizations = await query<OrgSummary>(
-    `select id, name, slug, plan, status from organizations order by name`,
-  );
-
-  const rows = [];
-
-  for (const org of organizations) {
-    const members = await queryOne<{ count: number }>(
-      `select count(*)::int as count from users where org_id = $1 and status = 'active'`,
-      [org.id],
-    );
-
-    const recent = await queryOne<{ count: number }>(
+  const [rows, activity] = await Promise.all([
+    query<OrgRow>(
       `
-        select count(*)::int as count
-        from audit_events
-        where org_id = $1 and created_at >= now() - interval '30 days'
+        select
+          o.id,
+          o.name,
+          o.slug,
+          o.plan,
+          o.status,
+          coalesce(u.active_members, 0)::int as "activeMembers",
+          coalesce(ae.events_30d, 0)::int as "events30d",
+          ae.last_event_at as "lastEventAt"
+        from organizations o
+        left join (
+          select org_id, count(*)::int as active_members
+          from users
+          where status = 'active'
+          group by org_id
+        ) u on u.org_id = o.id
+        left join (
+          select
+            org_id,
+            count(*) filter (where created_at >= now() - interval '30 days')::int as events_30d,
+            max(created_at) as last_event_at
+          from audit_events
+          group by org_id
+        ) ae on ae.org_id = o.id
+        order by o.name
       `,
-      [org.id],
-    );
-
-    const last = await queryOne<{ at: Date | null }>(
-      `select max(created_at) as at from audit_events where org_id = $1`,
-      [org.id],
-    );
-
-    rows.push({
-      id: org.id,
-      name: org.name,
-      slug: org.slug,
-      plan: org.plan,
-      status: org.status,
-      activeMembers: members?.count ?? 0,
-      events30d: recent?.count ?? 0,
-      lastEventAt: last?.at ?? null,
-    });
-  }
-
-  const activity = await query<{ day: string; count: number }>(
-    `
-      select
-        to_char(d.day, 'YYYY-MM-DD') as day,
-        coalesce(e.count, 0)::int as count
-      from generate_series(
-        date_trunc('day', now()) - 29 * interval '1 day',
-        date_trunc('day', now()),
-        interval '1 day'
-      ) d(day)
-      left join (
-        select date_trunc('day', created_at) as day, count(*)::int as count
-        from audit_events
-        where created_at >= date_trunc('day', now()) - 29 * interval '1 day'
-        group by 1
-      ) e on e.day = d.day
-      order by d.day
-    `,
-  );
+    ),
+    query<{ day: string; count: number }>(
+      `
+        select
+          to_char(d.day, 'YYYY-MM-DD') as day,
+          coalesce(e.count, 0)::int as count
+        from generate_series(
+          date_trunc('day', now()) - 29 * interval '1 day',
+          date_trunc('day', now()),
+          interval '1 day'
+        ) d(day)
+        left join (
+          select date_trunc('day', created_at) as day, count(*)::int as count
+          from audit_events
+          where created_at >= date_trunc('day', now()) - 29 * interval '1 day'
+          group by 1
+        ) e on e.day = d.day
+        order by d.day
+      `,
+    ),
+  ]);
 
   res.json({
     organizations: rows,
