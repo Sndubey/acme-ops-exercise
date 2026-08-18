@@ -1,0 +1,24 @@
+{
+  "name": "acme-ops",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["api", "web"],
+  "engines": {
+    "node": ">=20.12"
+  },
+  "scripts": {
+    "dev": "concurrently -n api,web -c yellow,cyan \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm run dev --workspace api",
+    "dev:web": "npm run dev --workspace web",
+    "setup": "npm run db:migrate && npm run db:seed",
+    "db:migrate": "npm run db:migrate --workspace api",
+    "db:seed": "npm run db:seed --workspace api",
+    "db:reset": "npm run db:reset --workspace api",
+    "typecheck": "npm run typecheck --workspace api && npm run typecheck --workspace web",
+    "test": "npm run test --workspace api",
+    "build": "npm run build --workspace web"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

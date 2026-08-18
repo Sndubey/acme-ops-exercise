@@ -1,0 +1,412 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+  ---------------------------------------------------------------------------
+  Acme Ops material system
+  ---------------------------------------------------------------------------
+  The console is modelled on a piece of bench equipment rather than a web page.
+  Everything follows one rule: light comes from above.
+
+    - Raised surfaces (controls, panels) are lighter than what they sit on,
+      carry a bright top edge and cast a shadow downward.
+    - Recessed surfaces (inputs, table headers, readouts) are darker than what
+      they sit in, with the highlight on the bottom edge instead.
+    - Flush surfaces (table rows) have no depth at all, only hairlines. Density
+      is unreadable if every row is a card.
+
+  The desk colour is deliberately mid-tone. A white background leaves nothing
+  for a raised panel to be lighter than, which is why flat UIs lose depth.
+*/
+
+:root {
+  --desk: #dfdbd3;
+  --desk-deep: #d3cfc6;
+  --panel: #f8f6f3;
+  --panel-hi: #fffefc;
+  --well: #d4d0c7;
+  --well-deep: #c8c3b9;
+
+  --ink: #201e1b;
+  --ink-soft: #635d55;
+  --ink-faint: #8d867b;
+
+  --line: #c2bcb1;
+  --line-soft: #d3cdc3;
+
+  --brass: #8f6a2e;
+  --brass-hi: #b08a4a;
+  --brass-ink: #fdfbf6;
+  --verdigris: #2e6b60;
+  --rust: #a03d28;
+  --amber: #966a12;
+
+  --edge-light: rgba(255, 255, 255, 0.92);
+  --edge-light-soft: rgba(255, 255, 255, 0.55);
+  --edge-dark: rgba(34, 32, 29, 0.12);
+
+  --shadow-raised:
+    inset 0 1px 0 0 var(--edge-light),
+    0 1px 1px rgba(34, 32, 29, 0.05),
+    0 3px 6px -2px rgba(34, 32, 29, 0.09),
+    0 10px 24px -10px rgba(34, 32, 29, 0.16);
+  --shadow-raised-sm:
+    inset 0 1px 0 0 var(--edge-light),
+    0 1px 1px rgba(34, 32, 29, 0.06),
+    0 2px 4px -1px rgba(34, 32, 29, 0.1);
+  --shadow-pressed:
+    inset 0 1px 3px rgba(34, 32, 29, 0.2),
+    inset 0 -1px 0 var(--edge-light-soft);
+  --shadow-well:
+    inset 0 1px 3px rgba(34, 32, 29, 0.16),
+    inset 0 -1px 0 var(--edge-light-soft);
+  --shadow-well-deep:
+    inset 0 2px 6px rgba(34, 32, 29, 0.24),
+    inset 0 -1px 0 var(--edge-light-soft);
+
+  --grain-opacity: 0.05;
+  --radius: 0.4375rem;
+
+  /* shadcn compatibility: `npx shadcn add ...` components inherit the material */
+  --background: var(--desk);
+  --foreground: var(--ink);
+  --card: var(--panel);
+  --card-foreground: var(--ink);
+  --popover: var(--panel);
+  --popover-foreground: var(--ink);
+  --primary: var(--brass);
+  --primary-foreground: var(--brass-ink);
+  --secondary: var(--well);
+  --secondary-foreground: var(--ink);
+  --muted: var(--well);
+  --muted-foreground: var(--ink-soft);
+  --accent: var(--well);
+  --accent-foreground: var(--ink);
+  --destructive: var(--rust);
+  --destructive-foreground: #fdf7f5;
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--brass);
+}
+
+.dark {
+  --desk: #121110;
+  --desk-deep: #0a0a09;
+  --panel: #26241f;
+  --panel-hi: #302d28;
+  --well: #171614;
+  --well-deep: #0f0e0d;
+
+  --ink: #f2eee7;
+  --ink-soft: #aaa294;
+  --ink-faint: #7b7468;
+
+  --line: #423d36;
+  --line-soft: #322e29;
+
+  --brass: #d3a557;
+  --brass-hi: #e8bf75;
+  --brass-ink: #1a1510;
+  --verdigris: #63b3a3;
+  --rust: #d8705a;
+  --amber: #d6a344;
+
+  --edge-light: rgba(255, 255, 255, 0.07);
+  --edge-light-soft: rgba(255, 255, 255, 0.04);
+  --edge-dark: rgba(0, 0, 0, 0.5);
+
+  --shadow-raised:
+    inset 0 1px 0 0 var(--edge-light),
+    0 1px 2px rgba(0, 0, 0, 0.45),
+    0 4px 10px -4px rgba(0, 0, 0, 0.5),
+    0 14px 28px -14px rgba(0, 0, 0, 0.65);
+  --shadow-raised-sm:
+    inset 0 1px 0 0 var(--edge-light),
+    0 1px 2px rgba(0, 0, 0, 0.45),
+    0 2px 5px -2px rgba(0, 0, 0, 0.5);
+  --shadow-pressed:
+    inset 0 2px 5px rgba(0, 0, 0, 0.6),
+    inset 0 -1px 0 var(--edge-light-soft);
+  --shadow-well:
+    inset 0 2px 5px rgba(0, 0, 0, 0.55),
+    inset 0 -1px 0 var(--edge-light-soft);
+  --shadow-well-deep:
+    inset 0 3px 8px rgba(0, 0, 0, 0.7),
+    inset 0 -1px 0 var(--edge-light-soft);
+
+  --grain-opacity: 0.035;
+
+  --destructive-foreground: #1a1211;
+}
+
+@theme inline {
+  --color-desk: var(--desk);
+  --color-desk-deep: var(--desk-deep);
+  --color-panel: var(--panel);
+  --color-panel-hi: var(--panel-hi);
+  --color-well: var(--well);
+  --color-well-deep: var(--well-deep);
+
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+
+  --color-brass: var(--brass);
+  --color-brass-hi: var(--brass-hi);
+  --color-brass-ink: var(--brass-ink);
+  --color-verdigris: var(--verdigris);
+  --color-rust: var(--rust);
+  --color-amber: var(--amber);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 3px);
+}
+
+@layer base {
+  * {
+    border-color: var(--line);
+  }
+
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--desk);
+    color: var(--ink);
+    font-family: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "cv05" 1;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /*
+    Material grain. Without it the surfaces read as coloured rectangles; with it
+    they read as something milled. Kept under 5% so it never fights the type.
+  */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--brass);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--brass) 30%, transparent);
+  }
+
+  /* Numbers in a console are read in columns, so they align in columns. */
+  .tabular,
+  table {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* A control or panel sitting on top of the desk. */
+  .surface-raised {
+    background-image: linear-gradient(180deg, var(--panel-hi) 0%, var(--panel) 100%);
+    border: 1px solid var(--line);
+    border-top-color: var(--line-soft);
+    box-shadow: var(--shadow-raised);
+  }
+
+  .surface-raised-sm {
+    background-image: linear-gradient(180deg, var(--panel-hi) 0%, var(--panel) 100%);
+    border: 1px solid var(--line);
+    border-top-color: var(--line-soft);
+    box-shadow: var(--shadow-raised-sm);
+  }
+
+  /* Cut into the surface: inputs, readouts, table headers. */
+  .surface-well {
+    background-image: linear-gradient(180deg, var(--well-deep) 0%, var(--well) 100%);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-well);
+  }
+
+  .surface-well-deep {
+    background-color: var(--well-deep);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-well-deep);
+  }
+
+  /* The tactile payoff: the control actually travels when pressed. */
+  .press {
+    transition:
+      transform 90ms cubic-bezier(0.2, 0, 0.2, 1),
+      box-shadow 90ms cubic-bezier(0.2, 0, 0.2, 1),
+      background-color 120ms ease;
+  }
+
+  .press:active:not(:disabled) {
+    transform: translateY(1px);
+    box-shadow: var(--shadow-pressed);
+  }
+
+  /* Engraved label: light theme gets a highlight beneath, dark gets a shadow. */
+  .etched {
+    text-shadow: 0 1px 0 var(--edge-light);
+  }
+
+  .dark .etched {
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.55);
+  }
+
+  /* Small uppercase legend, as stamped next to a physical control. */
+  .legend {
+    font-family: var(--font-plex-mono), ui-monospace, monospace;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .hairline {
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  /*
+    Signature element: the dashboard readouts. A recessed well with a bezel,
+    a brass numeral, and a stamped legend -- a panel meter, not a stat card.
+  */
+  .gauge {
+    position: relative;
+    background-image: linear-gradient(180deg, var(--well-deep) 0%, var(--well) 100%);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-well-deep);
+    overflow: hidden;
+  }
+
+  .gauge::after {
+    /* bezel: a hairline of reflected light around the inner rim */
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: calc(var(--radius) - 1px);
+    border: 1px solid var(--edge-light-soft);
+    pointer-events: none;
+  }
+
+  .gauge-value {
+    font-family: var(--font-plex-mono), ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  /* Row striping that stays legible at density without borders everywhere. */
+  .row-flush {
+    transition: background-color 110ms ease;
+  }
+
+  .row-flush:hover {
+    background-color: color-mix(in srgb, var(--edge-light) 45%, transparent);
+  }
+
+  .dark .row-flush:hover {
+    background-color: rgba(255, 255, 255, 0.028);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .press:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+@layer components {
+  /* Primary action: brushed brass, lit from above like every other control. */
+  .surface-brass {
+    background-image: linear-gradient(180deg, var(--brass-hi) 0%, var(--brass) 100%);
+    border: 1px solid color-mix(in srgb, var(--brass) 72%, black);
+    border-top-color: color-mix(in srgb, var(--brass-hi) 78%, white);
+    color: var(--brass-ink);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.3),
+      0 1px 2px rgba(34, 32, 29, 0.18),
+      0 4px 10px -3px rgba(34, 32, 29, 0.26);
+  }
+
+  .surface-brass:hover:not(:disabled) {
+    background-image: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--brass-hi) 88%, white) 0%,
+      var(--brass-hi) 100%
+    );
+  }
+
+  .surface-rust {
+    background-image: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--rust) 82%, white) 0%,
+      var(--rust) 100%
+    );
+    border: 1px solid color-mix(in srgb, var(--rust) 70%, black);
+    border-top-color: color-mix(in srgb, var(--rust) 60%, white);
+    color: var(--destructive-foreground);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.24),
+      0 1px 2px rgba(34, 32, 29, 0.18),
+      0 4px 10px -3px rgba(34, 32, 29, 0.26);
+  }
+
+  .surface-rust:hover:not(:disabled) {
+    background-image: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--rust) 68%, white) 0%,
+      color-mix(in srgb, var(--rust) 92%, white) 100%
+    );
+  }
+}

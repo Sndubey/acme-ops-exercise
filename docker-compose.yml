@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: acme-ops-db
+    environment:
+      POSTGRES_USER: acme
+      POSTGRES_PASSWORD: acme
+      POSTGRES_DB: acme_ops
+    ports:
+      # 5433 on the host so it does not collide with a local Postgres on 5432.
+      - "5433:5432"
+    volumes:
+      - acme-ops-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U acme -d acme_ops"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  acme-ops-pgdata:
