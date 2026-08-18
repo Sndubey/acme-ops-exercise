@@ -1,21 +1,16 @@
 # Tickets
 
-Pulled from the current sprint. **Do the ones we named in your email** — you
-were not assigned all of these.
+Pulled from the current sprint. **Do the ones we named in your email**, not all
+four. Read [README.md](./README.md) first if you have not, and record decisions
+and trade-offs in [DECISIONS.md](./DECISIONS.md) as you go.
 
-Read [README.md](./README.md) first if you have not. Record decisions and
-trade-offs in [DECISIONS.md](./DECISIONS.md) as you go.
+## ACME-412 · Invite several members at once
 
----
+**Feature · reported by Priya (Support Lead)**
 
-## ACME-412 — Invite several members at once
-
-**Type:** Feature · **Reported by:** Priya (Support Lead)
-
-> When a customer onboards a new team we currently add people one at a time
-> through the customer's own settings screen, which means a support call per
-> person. We want to paste in a list of email addresses and send the invitations
-> ourselves.
+> When a customer onboards a new team we add people one at a time through the
+> customer's own settings screen, which means a support call per person. We want
+> to paste in a list of email addresses and send the invitations ourselves.
 
 **Acceptance criteria**
 
@@ -27,64 +22,44 @@ trade-offs in [DECISIONS.md](./DECISIONS.md) as you go.
 - Addresses that are already members of that organization are handled sensibly.
 - Only operators who are allowed to manage members can do this.
 
-**Notes**
+No schema change is needed. Priya was clear about the happy path and vague about
+everything else, so use your judgment and write down what you decided.
 
-- No schema change is needed for this.
-- Priya was clear about the happy path and vague about everything else. Use your
-  judgment and write down what you decided.
+## ACME-431 · Activity CSV is missing rows
 
----
-
-## ACME-431 — Activity CSV is missing rows
-
-**Type:** Bug · **Reported by:** Support (escalated) · **Customer:** Northwind Trading Co.
+**Bug · escalated by Support · customer: Northwind Trading Co.**
 
 > Northwind pulled an activity export for their compliance review and say the
 > file does not match what the console shows them. They counted noticeably fewer
-> rows in the CSV than the console reports for the same account.
->
-> They also sent a screenshot of the same event appearing twice in one file.
->
-> It does not happen every time — one of their analysts re-ran the same export
-> and got a different number of rows out. We have not had this from any smaller
-> customer.
+> rows in the CSV than the console reports for the same account, and they sent a
+> screenshot of the same event appearing twice in one file. It does not happen
+> every time: one of their analysts re-ran the same export and got a different
+> number of rows out. We have not had this from any smaller customer.
 
-**What we need**
+We need the root cause written down in plain language, a fix, and a test that
+fails before the fix and passes after it. If you find more than one thing wrong
+here, tell us about all of them, including the ones you choose not to fix.
 
-1. The root cause, written down in plain language. What is actually going wrong.
-2. A fix.
-3. A test that fails before your fix and passes after it.
+## ACME-455 · The overview page is too slow
 
-If you find more than one thing wrong here, tell us about all of them, even the
-ones you choose not to fix.
-
----
-
-## ACME-455 — The overview page is too slow
-
-**Type:** Performance · **Reported by:** Dana (Ops)
+**Performance · reported by Dana (Ops)**
 
 > The dashboard takes the better part of ten seconds to come up. It is the first
-> thing we open in the morning and the whole team sits there waiting for it.
-> It did not used to be like this.
+> thing we open in the morning and the whole team sits there waiting for it. It
+> did not used to be like this.
 
-That is the whole ticket. Dana did not give us acceptance criteria and is on
-leave this week.
+That is the whole ticket. Dana gave no acceptance criteria and is on leave this
+week.
 
----
+## ACME-460 · Live activity feed, and tidy up reports
 
-## ACME-460 — Live activity feed, and tidy up reports
+**Improvement · reported by Dana (Ops)**
 
-**Type:** Improvement · **Reported by:** Dana (Ops)
-
-> Two things while you are in there:
->
-> 1. The activity panel on an organization's page should update by itself. We
->    sit with it open during an incident and keep hitting refresh.
-> 2. The reports module is old and does not look like the rest of the codebase.
->    Please move it onto the new query helper.
-
----
+> Two things while you are in there. First, the activity panel on an
+> organization's page should update by itself; we sit with it open during an
+> incident and keep hitting refresh. Second, the reports module is old and does
+> not look like the rest of the codebase, so please move it onto the new query
+> helper.
 
 ## Handing back
 

@@ -1,9 +1,7 @@
 # Decisions
 
-This is the part we read most carefully. Keep it short — notes, not an essay.
-Bullet points are fine. Half a page per ticket is plenty.
-
----
+This is the part we read most carefully. Keep it short: notes, not an essay.
+Bullet points are fine, and half a page per ticket is plenty.
 
 ## What I assumed
 
@@ -31,8 +29,8 @@ With another day, in priority order.
 ## Where I used AI
 
 Which tools, what you handed to them, and where you overruled them or threw the
-output away. Asked in good faith — we use these tools too and we are interested
-in how you drive them.
+output away. We use these tools too and we are interested in how you drive
+them, so this is asked in good faith.
 
 ## Anything broken or unfinished
 
