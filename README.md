@@ -125,10 +125,11 @@ See [TICKETS.md](./TICKETS.md) for the work, and record your thinking in
 
 ### Ground rules
 
-**Time box: 3–4 hours.** We mean it. We would much rather see three hours of
-good judgment than twelve hours of grinding, and we will not reward the latter.
-If you run out of time, stop and write down what you would do next — that is a
-real answer, not a failure.
+**Keep it small.** We are not measuring endurance and we do not reward grinding.
+We would much rather see good judgment on a couple of tickets than everything
+half-finished. Stop when you have something you can stand behind and explain,
+and write down what you would have done next — that is a real answer, not a
+failure.
 
 **Use AI.** We do, all day. Claude, Cursor, Copilot, whatever you like. The
 scope above assumes you are using it. We are interested in how you direct the
