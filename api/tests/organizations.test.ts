@@ -76,6 +76,25 @@ describe("GET /api/organizations/:id", () => {
   });
 });
 
+describe("GET /api/organizations/:id/events", () => {
+  it("returns recent events for an organization", async () => {
+    const res = await request(app).get("/api/organizations/1/events").expect(200);
+
+    expect(res.body.events).toBeInstanceOf(Array);
+    expect(res.body.events.length).toBeGreaterThan(0);
+    expect(res.body.events.length).toBeLessThanOrEqual(12);
+
+    const first = res.body.events[0];
+    expect(first).toHaveProperty("id");
+    expect(first).toHaveProperty("action");
+    expect(first).toHaveProperty("created_at");
+  });
+
+  it("400s for an invalid organization id", async () => {
+    await request(app).get("/api/organizations/not-an-id/events").expect(400);
+  });
+});
+
 describe("DELETE /api/organizations/:id/api-keys/:keyId", () => {
   it("refuses a request from a member", async () => {
     const res = await request(app)

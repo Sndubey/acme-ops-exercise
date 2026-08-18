@@ -9,6 +9,7 @@ import { FilterForm } from "@/components/app/filter-form";
 import { MemberActions } from "@/components/app/member-actions";
 import { PageHeader } from "@/components/app/page-header";
 import { Pagination } from "@/components/app/pagination";
+import { RecentActivity } from "@/components/app/recent-activity";
 import { MemberStatusTag, OrgStatusTag, PlanTag, RoleTag } from "@/components/app/tags";
 import { Button } from "@/components/ui/button";
 import { Gauge } from "@/components/ui/gauge";
@@ -232,38 +233,7 @@ export default async function OrganizationPage({ params, searchParams }: Props) 
         </Panel>
 
         <div className="space-y-6">
-          <Panel>
-            <PanelHeader>
-              <PanelTitle>Recent activity</PanelTitle>
-              <span className="legend">last {events.length}</span>
-            </PanelHeader>
-
-            <PanelBody className="px-0 py-0">
-              {events.length === 0 ? (
-                <EmptyState title="Nothing recorded for this tenant yet." />
-              ) : (
-                <ul>
-                  {events.map((event) => (
-                    <li
-                      key={event.id}
-                      className="row-flush border-b border-line-soft px-4 py-2.5 last:border-b-0"
-                    >
-                      <div className="flex items-baseline justify-between gap-3">
-                        <code className="font-mono text-[0.75rem] text-ink">{event.action}</code>
-                        <span className="shrink-0 text-[0.6875rem] text-ink-faint">
-                          {formatRelative(event.created_at)}
-                        </span>
-                      </div>
-                      <p className="mt-0.5 text-[0.6875rem] text-ink-soft">
-                        {event.actor_name ?? "System"} &middot;{" "}
-                        {formatDateTime(event.created_at)}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </PanelBody>
-          </Panel>
+          <RecentActivity orgId={orgId} initialEvents={events} />
 
           <ExportPanel
             action={apiUrl(`/api/organizations/${orgId}/export/activity.csv`)}

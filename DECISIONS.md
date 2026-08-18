@@ -35,4 +35,36 @@ Here is the updated version with all specific numbers removed, keeping it natura
 - Nothing broken. All tests pass and the dashboard loads without delay.
 ```
 
+## ACME-460 · Live activity feed, and tidy up reports
+
+## What I assumed
+- For live activity, 5s polling is frequent enough for operators tracking an incident without putting high load on the database.
+- For reports, the finance filters should reject invalid inputs with standard 400 errors rather than silently falling back.
+- Assumed `months` for signups should be bounded to a realistic range (1 to 60).
+
+## What I changed
+- Added `GET /api/organizations/:id/events` so live polling only retrieves the recent events array rather than re-running heavy org stats and sparklines.
+- Created `web/components/app/recent-activity.tsx` to handle 5s polling, pausing when the tab is hidden and clearing the interval on unmount.
+- Replaced the legacy `api/legacy/reports.ts` module with `api/queries/reports.ts`, using parameterized SQL to remove SQL injection vulnerabilities and adding `::int` casts for clean typing.
+- Added input validation in `api/routes/reports.ts` (`parseEnum` for plans, numeric bounds for months).
+- Deleted the `api/legacy/` folder.
+- Added tests in `api/tests/reports.test.ts` and `api/tests/organizations.test.ts`.
+
+## What I deliberately did not do
+- Did not use WebSockets or SSE for the live feed. Polling with visibility awareness is simpler, stateless, and resilient across server restarts.
+- Kept the UI design and layout identical to the original panel to avoid layout shifts.
+
+## Trade-offs
+- Dedicated polling endpoint vs. reusing `GET /organizations/:id`: A dedicated endpoint required one more route, but saves unnecessary database queries on every poll tick.
+
+## What I would do next
+- Add a subtle visual indicator (like a small live dot or flash) when new events arrive in the feed.
+
+## Where I used AI
+- Used Claude to review the polling design and verify parameterized query patterns for the reports refactor.
+
+## Anything broken or unfinished
+- Nothing broken. Live polling and refactored reports endpoints work as expected and all tests pass.
+
+
 
