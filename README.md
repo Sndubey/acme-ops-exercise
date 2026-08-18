@@ -143,5 +143,5 @@ is genuinely not a trap.
 3. Anything that does not work, said plainly. We would rather read an honest
    "this is broken and here's why" than discover it ourselves.
 
-We will spend 45 minutes with you afterwards going through what you built and
-extending it together, so bring your reasoning rather than just the diff.
+We will book a session with you afterwards to go through what you built and
+extend it together, so bring your reasoning rather than just the diff.
