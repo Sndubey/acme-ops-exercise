@@ -13,6 +13,7 @@ const BATCH_SIZE = 1000;
 type ExportRow = {
   id: string;
   created_at: Date;
+  created_at_cursor: string;
   action: string;
   target_type: string;
   target_id: string | null;
@@ -41,14 +42,16 @@ exportsRouter.get("/:id/export/activity.csv", async (req, res) => {
 
   res.write(csvLine(["id", "created_at", "action", "target_type", "target_id", "actor"]));
 
-  let offset = 0;
+  let cursorCreatedAt: string | null = null;
+  let cursorId: string | null = null;
 
   for (;;) {
-    const rows = await query<ExportRow>(
+    const rows: ExportRow[] = await query<ExportRow>(
       `
         select
           e.id::text,
           e.created_at,
+          to_char(e.created_at, 'YYYY-MM-DD"T"HH24:MI:SS.USOF') as created_at_cursor,
           e.action,
           e.target_type,
           e.target_id,
@@ -56,12 +59,16 @@ exportsRouter.get("/:id/export/activity.csv", async (req, res) => {
         from audit_events e
         left join users u on u.id = e.actor_user_id
         where e.org_id = $1
-          and ($2::timestamptz is null or e.created_at >= $2::timestamptz)
-          and ($3::timestamptz is null or e.created_at <= $3::timestamptz)
-        order by e.created_at desc
-        limit $4 offset $5
+          and ($2::date is null or e.created_at >= $2::date)
+          and ($3::date is null or e.created_at < ($3::date + interval '1 day'))
+          and (
+            $4::timestamptz is null
+            or (e.created_at, e.id) < ($4::timestamptz, $5::bigint)
+          )
+        order by e.created_at desc, e.id desc
+        limit $6
       `,
-      [orgId, from, to, BATCH_SIZE, offset],
+      [orgId, from, to, cursorCreatedAt, cursorId, BATCH_SIZE],
     );
 
     if (rows.length === 0) break;
@@ -80,7 +87,10 @@ exportsRouter.get("/:id/export/activity.csv", async (req, res) => {
     }
 
     if (rows.length < BATCH_SIZE) break;
-    offset += BATCH_SIZE;
+
+    const last = rows[rows.length - 1];
+    cursorCreatedAt = last.created_at_cursor;
+    cursorId = last.id;
   }
 
   res.end();

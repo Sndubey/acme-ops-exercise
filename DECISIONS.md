@@ -68,3 +68,31 @@ Here is the updated version with all specific numbers removed, keeping it natura
 
 
 
+## ACME-431 · Activity CSV is missing rows
+
+## What I assumed
+- Northwind's compliance export needs to match their database record count exactly.
+- Picking a `to` date in the UI should include the entire day, not cut off at midnight.
+
+## What I changed
+- Tracked down why Northwind was seeing duplicate and missing rows: the seed script writes their bulk events in transactions where 137 rows share the exact same `created_at`. 
+- Because `exports.ts` was doing `ORDER BY created_at DESC LIMIT 1000 OFFSET 1000`, Postgres had no tiebreaker when a batch split across identical timestamps. Rows shuffled between queries, causing duplicates in one batch and dropped rows in the next.
+- Switched from `LIMIT/OFFSET` to keyset pagination (`(created_at, id) < (cursor_time, cursor_id)` with `ORDER BY created_at DESC, id DESC`). Kept microsecond precision on the timestamp cursor so rows don't get skipped due to JS Date millisecond rounding.
+- Fixed the `to` date filter to use `< (to_date + interval '1 day')` so it includes events from that whole day.
+- Added `api/tests/exports.test.ts` to test large exports across batch boundaries and verify 0 duplicates.
+
+## What I deliberately did not do
+- Did not add a `COUNT(*)` to send a `Content-Length` header. Calculating the total upfront would just delay the start of the stream.
+- Left client disconnect handling alone for now since it's a separate concern from the pagination bug.
+
+## Trade-offs
+- Keyset pagination requires keeping track of the cursor across loops, but it completely fixes the ordering bug and avoids slow `OFFSET` scans on large datasets.
+
+## What I would do next
+- Add an abort listener on the request to stop database queries if the user cancels the download halfway through.
+
+## Where I used AI
+- Discussed the bulk sync timestamp tiebreaker with glm to confirm keyset pagination was the cleanest fix.
+
+## Anything broken or unfinished
+- Nothing broken. Northwind's export now pulls all events with zero missing rows and zero duplicates, and tests pass.
