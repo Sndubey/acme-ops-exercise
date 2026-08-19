@@ -96,3 +96,37 @@ Here is the updated version with all specific numbers removed, keeping it natura
 
 ## Anything broken or unfinished
 - Nothing broken. Northwind's export now pulls all events with zero missing rows and zero duplicates, and tests pass.
+
+
+
+
+## ACME-412 · Invite several members at once
+
+## What I assumed
+- Operators will paste email lists from spreadsheets or email threads with varying delimiters (newlines, commas, semicolons, spaces).
+- Since only emails are pasted, generated a readable default name from the email's local part so member rows don't display empty names.
+- If an input list contains an email that is already a member, we should skip it and invite the remaining new addresses rather than failing the whole request.
+
+## What I changed
+- Added `POST /api/organizations/:id/members/invite` protected by `requireRole("owner", "admin")`.
+- Parsed, validated, and deduplicated input emails. Checked existing members for the org to separate new invites from already-registered accounts.
+- Inserted new members with `status = 'invited'` and role from the request, recording a `user.invited` audit event for each user.
+- Created `web/components/app/invite-members-dialog.tsx` with a textarea and role selector, mounted in the Members panel header when `canManage` is true.
+- Added `inviteMembers` server action in `web/app/organizations/actions.ts` with page revalidation.
+- Added test coverage in `api/tests/members.test.ts`.
+
+## What I deliberately did not do
+- Did not implement SMTP email dispatch, as external worker pipelines handle notification delivery.
+- Did not overwrite or alter roles of existing members when skipped in an invite batch.
+
+## Trade-offs
+- Allowed flexible regex-based delimiter splitting on the backend rather than forcing operators to format their input into strict CSV lines.
+
+## What I would do next
+- Add a "Resend invite" button on pending `invited` member rows.
+
+## Where I used AI
+- Used Claude to discuss partial-batch handling and UI feedback messaging for skipped vs invited members.
+
+## Anything broken or unfinished
+- Nothing broken. Batch invitations work smoothly in the UI, write to the audit log, enforce RBAC, and all tests pass.

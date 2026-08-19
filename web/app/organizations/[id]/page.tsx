@@ -6,6 +6,7 @@ import { ApiKeyActions } from "@/components/app/api-key-actions";
 import { EmptyState } from "@/components/app/empty-state";
 import { ExportPanel } from "@/components/app/export-panel";
 import { FilterForm } from "@/components/app/filter-form";
+import { InviteMembersDialog } from "@/components/app/invite-members-dialog";
 import { MemberActions } from "@/components/app/member-actions";
 import { PageHeader } from "@/components/app/page-header";
 import { Pagination } from "@/components/app/pagination";
@@ -124,7 +125,10 @@ export default async function OrganizationPage({ params, searchParams }: Props) 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <Panel className="lg:col-span-2">
           <PanelHeader>
-            <PanelTitle>Members</PanelTitle>
+            <div className="flex items-center gap-3">
+              <PanelTitle>Members</PanelTitle>
+              {canManage ? <InviteMembersDialog orgId={orgId} /> : null}
+            </div>
 
             <FilterForm className="flex flex-wrap items-center gap-2">
               <div className="relative">
